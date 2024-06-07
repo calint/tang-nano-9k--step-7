@@ -99,25 +99,8 @@ module TestBench;
     #clk_tk;
     sys_rst_n <= 1;
 
+    // wait for burst RAM to initiate
     while (br_busy) #clk_tk;
-
-    // // dump the cache
-    // for (i = 0; i < 8; i = i + 1) begin
-    //   $display("1). %h : %h  %h  %h  %h", cache.tag.data[i], cache.data0.data[i],
-    //            cache.data1.data[i], cache.data2.data[i], cache.data3.data[i]);
-    // end
-
-    // // write
-    // address <= 4;
-    // data_in <= 32'habcd_ef12;
-    // write_enable <= 4'b1111;
-    // #clk_tk;
-
-    // // write
-    // address <= 8;
-    // data_in <= 32'habcd_1234;
-    // write_enable <= 4'b1111;
-    // #clk_tk;
 
     // read; cache miss
     address <= 16;
@@ -126,11 +109,10 @@ module TestBench;
 
     while (!data_out_ready) #clk_tk;
 
-    // one cycle delay. value for address 4
     if (data_out == 32'hD5B8A9C4) $display("Test 1 passed");
     else $display("Test 1 FAILED");
 
-    // read; cache hit
+    // read address 8; cache hit; one cycle delay
     address <= 8;
     write_enable <= 0;
     #clk_tk;
@@ -159,7 +141,7 @@ module TestBench;
     if (data_out == 32'h9D8E2F17 && data_out_ready) $display("Test 5 passed");
     else $display("Test 5 FAILED");
 
-    // write; cache hit
+    // write byte; cache hit
     address <= 8;
     data_in <= 32'h0000_00ad;
     write_enable <= 4'b0001;
@@ -175,7 +157,7 @@ module TestBench;
 
     #clk_tk;
 
-    // write
+    // write half-word
     address <= 8;
     data_in <= 32'h00008765;
     write_enable <= 4'b0011;
@@ -189,7 +171,7 @@ module TestBench;
     if (data_out == 32'hAB4C8765 && data_out_ready) $display("Test 8 passed");
     else $display("Test 8 FAILED");
 
-    // write
+    // write upper half-word
     address <= 8;
     data_in <= 32'hfeef0000;
     write_enable <= 4'b1100;
@@ -203,7 +185,7 @@ module TestBench;
     if (data_out == 32'hfeef8765 && data_out_ready) $display("Test 9 passed");
     else $display("Test 9 FAILED");
 
-    // cache miss, evict then write
+    // write word; cache miss; evict then write
     address <= 64;
     data_in <= 32'habcdef12;
     write_enable <= 4'b1111;

@@ -13,6 +13,7 @@ pwd
 
 # switch for system verilog
 # -g2005-sv 
+#    ~/.wine/drive_c/Gowin/Gowin_V1.9.9.03_x64/IDE/simlib/gw1n/prim_sim.v \
 
 iverilog -Winfloop -pfileline=1 -o iverilog.vvp TestBench.v \
     $SRCPTH/BESDPB.v \
@@ -21,3 +22,5 @@ iverilog -Winfloop -pfileline=1 -o iverilog.vvp TestBench.v \
 
 vvp iverilog.vvp
 rm iverilog.vvp
+
+

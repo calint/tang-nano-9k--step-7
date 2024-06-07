@@ -9,6 +9,6 @@
         <File path="src/BurstRAM.v" type="file.verilog" enable="1"/>
         <File path="src/Cache.v" type="file.verilog" enable="1"/>
         <File path="src/Top.v" type="file.verilog" enable="1"/>
-        <File path="src/riscv.cst" type="file.cst" enable="1"/>
+        <File path="soc.cst" type="file.cst" enable="1"/>
     </FileList>
 </Project>

@@ -86,7 +86,7 @@ module Cache #(
 
   // starting address in burst RAM for the cache line tag
   wire [BURST_RAM_DEPTH_BITWIDTH-1:0] burst_dirty_cache_line_address = {line_tag_from_cache,line_ix}<<2;
-  // note: <<2 because a cache line contains 4 burst RAM words (32 B / 8 B = 4)
+  // note: <<2 because a cache line contains a burst of 4 64 bit words (32 B / 8 B = 4)
 
   wire cache_line_hit = line_valid && line_tag_from_address == line_tag_from_cache;
   assign busy = !cache_line_hit;

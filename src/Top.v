@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+//
 `default_nettype none
 
 module Top (
@@ -12,6 +14,16 @@ module Top (
   assign uart_tx = uart_rx;
 
   localparam BURST_RAM_DEPTH_BITWIDTH = 4;
+
+  //-- BurstRAM
+  wire br_cmd;
+  wire br_cmd_en;
+  wire [BURST_RAM_DEPTH_BITWIDTH-1:0] br_addr;
+  wire [63:0] br_wr_data;
+  wire [7:0] br_data_mask;
+  wire [63:0] br_rd_data;
+  wire br_rd_data_ready;
+  wire br_busy;
 
   BurstRAM #(
       .DATA_FILE("RAM.mem"),  // initial RAM content
@@ -29,14 +41,14 @@ module Top (
       .rd_data_ready(br_rd_data_ready),  // rd_data is valid
       .busy(br_busy)
   );
-  wire br_cmd;
-  wire br_cmd_en;
-  wire [BURST_RAM_DEPTH_BITWIDTH-1:0] br_addr;
-  wire [63:0] br_wr_data;
-  wire [7:0] br_data_mask;
-  wire [63:0] br_rd_data;
-  wire br_rd_data_ready;
-  wire br_busy;
+
+  // -- Cache
+  reg [31:0] address;
+  wire [31:0] data_out;
+  wire data_out_ready;
+  reg [31:0] data_in;
+  reg [3:0] write_enable;
+  wire busy;
 
   Cache #(
       .LINE_IX_BITWIDTH(10),
@@ -61,12 +73,6 @@ module Top (
       .br_rd_data_ready(br_rd_data_ready),
       .br_busy(br_busy)
   );
-  reg [31:0] address;
-  wire [31:0] data_out;
-  wire data_out_ready;
-  reg [31:0] data_in;
-  reg [3:0] write_enable;
-  wire busy;
 
   reg [3:0] state;
 

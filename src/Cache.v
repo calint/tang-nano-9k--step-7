@@ -3,6 +3,8 @@
 //
 // reviewed 2024-06-07
 
+`timescale 1ns / 1ps
+//
 `default_nettype none
 // `define DBG
 // `define INFO
@@ -66,6 +68,31 @@ module Cache #(
 
   // 4 column cache line
 
+  reg burst_reading;  // set if in burst read operation
+  reg [31:0] burst_data_in_0;
+  reg [31:0] burst_data_in_1;
+  reg [31:0] burst_data_in_2;
+  reg [31:0] burst_data_in_3;
+  reg [31:0] burst_data_in_4;
+  reg [31:0] burst_data_in_5;
+  reg [31:0] burst_data_in_6;
+  reg [31:0] burst_data_in_7;
+
+  reg burst_writing;  // set if in burst write operation
+  reg [3:0] burst_write_enable_tag;
+  reg [3:0] burst_write_enable_0;
+  reg [3:0] burst_write_enable_1;
+  reg [3:0] burst_write_enable_2;
+  reg [3:0] burst_write_enable_3;
+  reg [3:0] burst_write_enable_4;
+  reg [3:0] burst_write_enable_5;
+  reg [3:0] burst_write_enable_6;
+  reg [3:0] burst_write_enable_7;
+
+  wire [31:0] line_tag_and_flags_from_cache;
+  reg [3:0] write_enable_tag;
+  reg [31:0] data_in_tag;
+
   BESDPB #(
       .ADDRESS_BITWIDTH(LINE_IX_BITWIDTH)
   ) tag (
@@ -75,9 +102,6 @@ module Cache #(
       .data_in(data_in_tag),
       .data_out(line_tag_and_flags_from_cache)
   );
-  wire [31:0] line_tag_and_flags_from_cache;
-  reg [3:0] write_enable_tag;
-  reg [31:0] data_in_tag;
 
   // extract portions of the combined tag, valid, dirty line info
   wire line_valid = line_tag_and_flags_from_cache[LINE_VALID_BIT];
@@ -94,6 +118,10 @@ module Cache #(
   // 8 byte enabled semi dual port RAM blocks
   // 'data_in' connected either to the input if a cache hit write or to the state machine
   // that loads a cache lines
+  wire [31:0] data0_out;
+  reg  [ 3:0] write_enable_0;
+  reg  [31:0] data_in_0;
+
   BESDPB #(
       .ADDRESS_BITWIDTH(LINE_IX_BITWIDTH)
   ) data0 (
@@ -103,9 +131,10 @@ module Cache #(
       .data_in(burst_reading ? burst_data_in_0 : data_in_0),
       .data_out(data0_out)
   );
-  wire [31:0] data0_out;
-  reg  [ 3:0] write_enable_0;
-  reg  [31:0] data_in_0;
+
+  wire [31:0] data1_out;
+  reg  [ 3:0] write_enable_1;
+  reg  [31:0] data_in_1;
 
   BESDPB #(
       .ADDRESS_BITWIDTH(LINE_IX_BITWIDTH)
@@ -116,9 +145,10 @@ module Cache #(
       .data_in(burst_reading ? burst_data_in_1 : data_in_1),
       .data_out(data1_out)
   );
-  wire [31:0] data1_out;
-  reg  [ 3:0] write_enable_1;
-  reg  [31:0] data_in_1;
+
+  wire [31:0] data2_out;
+  reg  [ 3:0] write_enable_2;
+  reg  [31:0] data_in_2;
 
   BESDPB #(
       .ADDRESS_BITWIDTH(LINE_IX_BITWIDTH)
@@ -129,9 +159,10 @@ module Cache #(
       .data_in(burst_reading ? burst_data_in_2 : data_in_2),
       .data_out(data2_out)
   );
-  wire [31:0] data2_out;
-  reg  [ 3:0] write_enable_2;
-  reg  [31:0] data_in_2;
+
+  wire [31:0] data3_out;
+  reg  [ 3:0] write_enable_3;
+  reg  [31:0] data_in_3;
 
   BESDPB #(
       .ADDRESS_BITWIDTH(LINE_IX_BITWIDTH)
@@ -142,9 +173,10 @@ module Cache #(
       .data_in(burst_reading ? burst_data_in_3 : data_in_3),
       .data_out(data3_out)
   );
-  wire [31:0] data3_out;
-  reg  [ 3:0] write_enable_3;
-  reg  [31:0] data_in_3;
+
+  wire [31:0] data4_out;
+  reg  [ 3:0] write_enable_4;
+  reg  [31:0] data_in_4;
 
   BESDPB #(
       .ADDRESS_BITWIDTH(LINE_IX_BITWIDTH)
@@ -155,9 +187,10 @@ module Cache #(
       .data_in(burst_reading ? burst_data_in_4 : data_in_4),
       .data_out(data4_out)
   );
-  wire [31:0] data4_out;
-  reg  [ 3:0] write_enable_4;
-  reg  [31:0] data_in_4;
+
+  wire [31:0] data5_out;
+  reg  [ 3:0] write_enable_5;
+  reg  [31:0] data_in_5;
 
   BESDPB #(
       .ADDRESS_BITWIDTH(LINE_IX_BITWIDTH)
@@ -168,9 +201,10 @@ module Cache #(
       .data_in(burst_reading ? burst_data_in_5 : data_in_5),
       .data_out(data5_out)
   );
-  wire [31:0] data5_out;
-  reg  [ 3:0] write_enable_5;
-  reg  [31:0] data_in_5;
+
+  wire [31:0] data6_out;
+  reg  [ 3:0] write_enable_6;
+  reg  [31:0] data_in_6;
 
   BESDPB #(
       .ADDRESS_BITWIDTH(LINE_IX_BITWIDTH)
@@ -181,9 +215,10 @@ module Cache #(
       .data_in(burst_reading ? burst_data_in_6 : data_in_6),
       .data_out(data6_out)
   );
-  wire [31:0] data6_out;
-  reg  [ 3:0] write_enable_6;
-  reg  [31:0] data_in_6;
+
+  wire [31:0] data7_out;
+  reg  [ 3:0] write_enable_7;
+  reg  [31:0] data_in_7;
 
   BESDPB #(
       .ADDRESS_BITWIDTH(LINE_IX_BITWIDTH)
@@ -194,9 +229,6 @@ module Cache #(
       .data_in(burst_reading ? burst_data_in_7 : data_in_7),
       .data_out(data7_out)
   );
-  wire [31:0] data7_out;
-  reg  [ 3:0] write_enable_7;
-  reg  [31:0] data_in_7;
 
   always @(*) begin
     case (column_ix)
@@ -266,7 +298,7 @@ module Cache #(
         write_enable_tag = 4'b1111;
         data_in_tag = {1'b1, 1'b1, line_tag_from_address};
         // note: { dirty, valid, tag }
-        
+
         // connect 'data_in_x' to the input and set 'write_enable_x'
         // for the addressed data element in the cache line
         case (column_ix)
@@ -327,27 +359,6 @@ module Cache #(
   localparam STATE_WRITE_2 = 10'b00_1000_0000;
   localparam STATE_WRITE_3 = 10'b01_0000_0000;
   localparam STATE_WRITE_FINISH = 10'b10_0000_0000;
-
-  reg burst_reading;  // set if in burst read operation
-  reg burst_writing;  // set if in burst write operation
-
-  reg [3:0] burst_write_enable_tag;
-  reg [3:0] burst_write_enable_0;
-  reg [31:0] burst_data_in_0;
-  reg [3:0] burst_write_enable_1;
-  reg [31:0] burst_data_in_1;
-  reg [3:0] burst_write_enable_2;
-  reg [31:0] burst_data_in_2;
-  reg [3:0] burst_write_enable_3;
-  reg [31:0] burst_data_in_3;
-  reg [3:0] burst_write_enable_4;
-  reg [31:0] burst_data_in_4;
-  reg [3:0] burst_write_enable_5;
-  reg [31:0] burst_data_in_5;
-  reg [3:0] burst_write_enable_6;
-  reg [31:0] burst_data_in_6;
-  reg [3:0] burst_write_enable_7;
-  reg [31:0] burst_data_in_7;
 
   always @(posedge clk) begin
     if (rst) begin

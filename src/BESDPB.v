@@ -2,6 +2,8 @@
 // synthesizes to Byte Enabled Semi Dual Port Block RAM (BESDPB) in Gowin EDA
 //
 
+`timescale 1ns / 1ps
+//
 `default_nettype none
 // `define DBG
 // `define INFO
@@ -10,7 +12,8 @@ module BESDPB #(
     parameter DATA_FILE = "",
     parameter ADDRESS_BITWIDTH = 16,
     parameter DATA_BITWIDTH = 32,
-    parameter COLUMN_BITWIDTH = 8
+    parameter COLUMN_BITWIDTH = 8,
+    parameter COLUMN_COUNT = DATA_BITWIDTH / COLUMN_BITWIDTH
 ) (
     input wire clk,
     input wire [COLUMN_COUNT-1:0] write_enable,
@@ -19,7 +22,7 @@ module BESDPB #(
     input wire [DATA_BITWIDTH-1:0] data_in
 );
 
-  localparam COLUMN_COUNT = DATA_BITWIDTH / COLUMN_BITWIDTH;
+  reg [DATA_BITWIDTH-1:0] data[2**ADDRESS_BITWIDTH-1:0];
 
   assign data_out = data[address];
 
@@ -28,8 +31,6 @@ module BESDPB #(
       $readmemh(DATA_FILE, data, 0, 2 ** ADDRESS_BITWIDTH - 1);
     end
   end
-
-  reg [DATA_BITWIDTH-1:0] data[2**ADDRESS_BITWIDTH-1:0];
 
   integer i;  // used in for loops
   always @(posedge clk) begin

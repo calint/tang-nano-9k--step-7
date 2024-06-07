@@ -12,6 +12,13 @@ module TestBench;
   localparam clk_tk = 4;
   always #(clk_tk / 2) clk = ~clk;
 
+  wire clkout;
+
+  Gowin_rPLL rpll (
+      .clkout(clkout),  //output clkout
+      .clkin (clk)  //input clkin
+  );
+
   wire br_cmd;
   wire br_cmd_en;
   wire [BURST_RAM_DEPTH_BITWIDTH-1:0] br_addr;
@@ -26,7 +33,7 @@ module TestBench;
       .DEPTH_BITWIDTH(BURST_RAM_DEPTH_BITWIDTH),  // 2 ^ 4 * 8 B entries
       .BURST_COUNT(4)  // 4 * 64 bit data per burst
   ) burst_ram (
-      .clk(clk),
+      .clk(clkout),
       .rst(!sys_rst_n),
       .cmd(br_cmd),  // 0: read, 1: write
       .cmd_en(br_cmd_en),  // 1: cmd and addr is valid

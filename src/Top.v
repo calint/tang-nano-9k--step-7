@@ -101,11 +101,11 @@ module Top (
           end
         end
 
-        3: begin  // read from cache
+        3: begin  // write from cache
           led <= {data_out_ready, data_out[3:0]};
           write_enable <= 4'b1111;
           address <= address - 4;
-          state <= 1;
+          state <= 0;
         end
 
       endcase

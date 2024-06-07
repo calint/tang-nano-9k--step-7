@@ -73,9 +73,9 @@ module Top (
   // some code so that Gowin EDA doesn't optimize it away
   always @(posedge sys_clk) begin
     if (!sys_rst_n) begin
-address<=0;
-data_in<=0;
-write_enable<=0;
+      address <= 0;
+      data_in <= 0;
+      write_enable <= 0;
       state <= 0;
     end else begin
       led[5] = btn1;  // note: to rid off 'unused warning'

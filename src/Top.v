@@ -81,30 +81,30 @@ module Top (
       led[5] = btn1;  // note: to rid off 'unused warning'
       case (state)
 
-        0: begin  // wait for initiation
-          led[5] <= br_busy;
+        0: begin  // wait for initiation / busy
+          led <= {busy, data_out_ready, data_out[3:0]};
           if (!br_busy) begin
             state <= 1;
           end
         end
 
         1: begin  // read from cache
-          led <= {data_out_ready, data_out[3:0]};
+          led <= {busy, data_out_ready, data_out[3:0]};
           write_enable <= 0;
-          address <= address + 4;
           state <= 2;
         end
 
         2: begin
+          led <= {busy, data_out_ready, data_out[3:0]};
           if (data_out_ready) begin
             state <= 3;
           end
         end
 
-        3: begin  // write from cache
-          led <= {data_out_ready, data_out[3:0]};
+        3: begin  // write to cache
+          led <= {busy, data_out_ready, data_out[3:0]};
           write_enable <= 4'b1111;
-          address <= address - 4;
+          address <= address + 4;
           state <= 0;
         end
 

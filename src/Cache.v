@@ -91,6 +91,9 @@ module Cache #(
   wire cache_line_hit = line_valid && line_tag_from_address == line_tag_from_cache;
   assign busy = !cache_line_hit;
 
+  // 8 byte enabled semi dual port RAM blocks
+  // 'data_in' connected either to the input if a cache hit write or to the state machine
+  // that loads a cache lines
   BESDPB #(
       .ADDRESS_BITWIDTH(LINE_IX_BITWIDTH)
   ) data0 (
@@ -213,7 +216,8 @@ module Cache #(
       data_out_ready = cache_line_hit;
     end
 
-    // if it is a write
+    // if it is a burst read of a cache line connect the 'write_enable_x' to
+    // the the state machine 'burst_write_enable_x' register
     write_enable_tag = 0;
     data_in_tag = 0;
     write_enable_0 = 0;
@@ -258,9 +262,13 @@ module Cache #(
 `ifdef DBG
         $display("@(*) cache hit, set flag dirty");
 `endif
+        // enable write tag with dirty bit set
         write_enable_tag = 4'b1111;
         data_in_tag = {1'b1, 1'b1, line_tag_from_address};
         // note: { dirty, valid, tag }
+        
+        // connect 'data_in_x' to the input and set 'write_enable_x'
+        // for the addressed data element in the cache line
         case (column_ix)
           0: begin
             write_enable_0 = write_enable;
@@ -320,8 +328,8 @@ module Cache #(
   localparam STATE_WRITE_3 = 10'b01_0000_0000;
   localparam STATE_WRITE_FINISH = 10'b10_0000_0000;
 
-  reg burst_reading;  // high if in burst read operation
-  reg burst_writing;  // high if in burst write operation
+  reg burst_reading;  // set if in burst read operation
+  reg burst_writing;  // set if in burst write operation
 
   reg [3:0] burst_write_enable_tag;
   reg [3:0] burst_write_enable_0;
@@ -361,6 +369,7 @@ module Cache #(
 
         STATE_IDLE: begin
           if (!cache_line_hit) begin
+            // cache miss, start reading the addressed cache line
 `ifdef DBG
             $display("@(c) cache miss address 0x%h  write mask: %b", address, write_enable);
 `endif
@@ -370,6 +379,8 @@ module Cache #(
 `endif
               // write
               if (line_dirty) begin
+                // current cache line dirty; first write it back then read the addressed
+                // cache line
 `ifdef DBG
                 $display("@(c) line dirty, evict to RAM address 0x%h",
                          burst_dirty_cache_line_address);

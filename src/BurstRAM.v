@@ -1,6 +1,6 @@
 //
-// an emulator of a ram that bursts reads and writes
-// used in simulations to mock IP components
+// an emulator of a RAM that does burst reads and writes used in simulations
+// to mock IP components
 //
 
 `default_nettype none

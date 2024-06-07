@@ -1,8 +1,8 @@
 //
-// cache interfacing with burst RAM memory
+// cache interfacing with burst RAM
 //
 // reviewed 2024-06-07
-//
+
 `default_nettype none
 // `define DBG
 // `define INFO

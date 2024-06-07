@@ -3,8 +3,8 @@
 //
 
 `default_nettype none
-`define DBG
-`define INFO
+// `define DBG
+// `define INFO
 
 module BESDPB #(
     parameter DATA_FILE = "",
